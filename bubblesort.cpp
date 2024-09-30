@@ -24,7 +24,7 @@ enum class Algorithm {
 // Function to render the menu and capture user selection
 Algorithm renderMenu(sf::RenderWindow& window) {
     // Define the menu options
-    std::vector<std::string> options = { "Bubble Sort", "Insertion Sort", "Selection Sort" };
+    std::vector<std::string> options = { "Bubble Sort", "Insertion Sort", "Selection Sort", "Merge Sort", "Quick Sort" };
     int selectedOption = 0;
 
     sf::Font font;
@@ -229,7 +229,62 @@ void selectionSort(std::vector<int>& arr, sf::RenderWindow& window) {
 
         sf::sleep(sf::milliseconds(300));
     }
+    for (int num : arr) std::cout << num << " ";
 
+    drawEndMessage(window, arr);
+}
+
+void mergeSort(std::vector<int>& arr, sf::RenderWindow& window) {
+    for (int num : arr) std::cout << num << " ";
+}
+
+void partition(std::vector<int>& arr, sf::RenderWindow& window) {
+    int n = arr.size();
+
+    // Base case
+    if (n <= 1) {
+        return;
+    }
+
+    int mid = n / 2;
+    int pivot = arr[mid];
+
+    std::vector<int> low, high;
+
+    window.clear();
+    drawArray(window, arr, -1, mid);
+    window.display();
+    sf::sleep(sf::milliseconds(300));
+
+    // Partition the array into low and high based on the pivot
+    for (int i = 0; i < n; i++) {
+        if (i != mid){
+            if (arr[i] <= pivot) {
+                low.push_back(arr[i]);
+            } else {
+                high.push_back(arr[i]);
+            }
+        }
+    }
+
+    // Recursively sort the low and high partitions
+    partition(low, window);
+    partition(high, window);
+
+    // Reconstruct the original array
+    arr = std::move(low); // Move sorted low elements to arr
+    arr.push_back(pivot);
+    arr.insert(arr.end(), high.begin(), high.end());
+
+    // Visualization logic to show the combined array
+    window.clear();
+    drawArray(window, arr, -1, -1);
+    window.display();
+    sf::sleep(sf::milliseconds(500));
+}
+
+void quickSort(std::vector<int>& arr, sf::RenderWindow& window) {
+    partition(arr, window);
     drawEndMessage(window, arr);
 }
 
@@ -266,6 +321,12 @@ int main() {
             }
             if (selectedAlgorithm == Algorithm::SELECTION_SORT) {
                 selectionSort(inputData, window);
+            }
+            if (selectedAlgorithm == Algorithm::MERGE_SORT) {
+                mergeSort(inputData, window);
+            }
+            if (selectedAlgorithm == Algorithm::QUICK_SORT) {
+                quickSort(inputData, window);
             }
 
             // Move back to the main menu after returning from sorting
