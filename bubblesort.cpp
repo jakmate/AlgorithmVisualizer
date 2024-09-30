@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+//#include <TGUI/TGUI.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,13 +16,16 @@ enum class AppState {
 enum class Algorithm {
     NONE,
     BUBBLE_SORT,
-    SELECTION_SORT
+    INSERTION_SORT,
+    SELECTION_SORT,
+    MERGE_SORT,
+    QUICK_SORT
 };
 
 // Function to render the menu and capture user selection
 Algorithm renderMenu(sf::RenderWindow& window) {
     // Define the menu options
-    std::vector<std::string> options = { "Bubble Sort", "Selection Sort" };
+    std::vector<std::string> options = { "Bubble Sort", "Insertion Sort" };
     int selectedOption = 0;
 
     sf::Font font;
@@ -73,17 +77,33 @@ Algorithm renderMenu(sf::RenderWindow& window) {
     return Algorithm::NONE;
 }
 
-void drawArray(sf::RenderWindow& window, const std::vector<int>& arr) {
-    float barWidth = window.getSize().x / arr.size();
-    float maxHeight = window.getSize().y * 0.8f;  // Keep some space at the top
-    int maxElement = *std::max_element(arr.begin(), arr.end());
+void drawArray(sf::RenderWindow& window, const std::vector<int>& arr, int highlightedIndex1 = -1, int highlightedIndex2 = -1) {
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Error loading font" << std::endl;
+        return;
+    }
+
+    float textSize = 30.0f; // Size of each number
+    float xOffset = window.getSize().x / arr.size(); // Horizontal space between numbers
 
     for (size_t i = 0; i < arr.size(); ++i) {
-        float barHeight = (arr[i] / static_cast<float>(maxElement)) * maxHeight;
-        sf::RectangleShape bar(sf::Vector2f(barWidth, barHeight));
-        bar.setPosition(i * barWidth, window.getSize().y - barHeight);
-        bar.setFillColor(sf::Color::Cyan);
-        window.draw(bar);
+        sf::Text numberText;
+        numberText.setFont(font);
+        numberText.setString(std::to_string(arr[i]));
+        numberText.setCharacterSize(textSize);
+
+        // Highlight the elements being compared or swapped
+        if (static_cast<int>(i) == highlightedIndex1 || static_cast<int>(i) == highlightedIndex2) {
+            numberText.setFillColor(sf::Color::Red);  // Highlighted color
+        } else {
+            numberText.setFillColor(sf::Color::White);  // Normal color
+        }
+
+        // Position each number text horizontally based on its index
+        numberText.setPosition(i * xOffset + (xOffset / 2) - numberText.getGlobalBounds().width / 2, window.getSize().y / 2);
+
+        window.draw(numberText);
     }
 }
 
@@ -95,15 +115,16 @@ void bubbleSort(std::vector<int>& arr, sf::RenderWindow& window) {
         swapped = false;
         for (int j = 0; j < n - i - 1; j++) {
             if (arr[j] > arr[j + 1]) {
+                // Swap the elements
                 std::swap(arr[j], arr[j + 1]);
                 swapped = true;
 
                 window.clear();
-                // Draw the array
-                drawArray(window, arr);
+                // Draw the array and highlight the swapped elements
+                drawArray(window, arr, j, j + 1);
                 window.display();
 
-                sf::sleep(sf::milliseconds(100));  // Slow down the sorting process for visualization
+                sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
             }
         }
         if (!swapped)
@@ -137,8 +158,68 @@ void bubbleSort(std::vector<int>& arr, sf::RenderWindow& window) {
 
         // Clear window and redraw the sorted array and the message
         window.clear();
-        drawArray(window, arr);  // Draw the final sorted array
-        window.draw(message);     // Draw the message
+        drawArray(window, arr);  // Draw the final sorted array as numbers
+        window.draw(message);    // Draw the message
+        window.display();
+    }
+}
+
+void insertionSort(std::vector<int>& arr, sf::RenderWindow& window) {
+    int n = arr.size();
+
+    for (int i = 1; i < n; i++) {
+        int j = i - 1;
+        int val = arr[i];
+        while (j >= 0 && arr[j] > val) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+
+            window.clear();
+            // Draw the array and highlight the element being inserted
+            drawArray(window, arr, j + 1, i);
+            window.display();
+
+            sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
+        }
+        arr[j + 1] = val;
+
+        window.clear();
+        // Draw the array and highlight the element being placed at its correct position
+        drawArray(window, arr, j + 1, i);
+        window.display();
+
+        sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
+    }
+
+    // Display message to press Enter
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Error loading font" << std::endl;
+    }
+
+    sf::Text message;
+    message.setFont(font);
+    message.setString("Press Enter to return to the main menu");
+    message.setCharacterSize(24);
+    message.setFillColor(sf::Color::White);
+    message.setPosition(window.getSize().x / 2 - message.getGlobalBounds().width / 2, 50);
+
+    // Wait for the Enter key press
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                return;  // Exit the function and return to the main menu
+            }
+        }
+
+        // Clear window and redraw the sorted array and the message
+        window.clear();
+        drawArray(window, arr);  // Draw the final sorted array as numbers
+        window.draw(message);    // Draw the message
         window.display();
     }
 }
@@ -171,8 +252,11 @@ int main() {
             if (selectedAlgorithm == Algorithm::BUBBLE_SORT) {
                 bubbleSort(inputData, window);
             }
+            if (selectedAlgorithm == Algorithm::INSERTION_SORT) {
+                insertionSort(inputData, window);
+            }
             // Add other algorithms here
-            appState = AppState::MENU; // Move back to the main menu after returning from bubbleSort
+            appState = AppState::MENU; // Move back to the main menu after returning from sorting
             break;
         }
     }
