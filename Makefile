@@ -1,10 +1,10 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -IF:/SFML-2.6.1/include -IF:/TGUI-1.5/include
-LDFLAGS = -LF:/SFML-2.6.1/lib -LF:/TGUI-1.5/lib
+CXXFLAGS = -IF:/SFML-2.6.1/include
+LDFLAGS = -LF:/SFML-2.6.1/lib
 
 # Libraries to link (FDS, SFML, and TGUI)
-LDLIBS = -lsfml-graphics -lsfml-window -lsfml-system -ltgui
+LDLIBS =  -lsfml-graphics -lsfml-window -lsfml-system
 
 # Targets
 all: bubblesort

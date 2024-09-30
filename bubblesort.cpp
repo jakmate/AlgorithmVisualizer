@@ -1,9 +1,8 @@
 #include <SFML/Graphics.hpp>
-//#include <TGUI/TGUI.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <algorithm> // for std::max_element
+#include <algorithm>
 
 // Enumeration for application state
 enum class AppState {
@@ -25,7 +24,7 @@ enum class Algorithm {
 // Function to render the menu and capture user selection
 Algorithm renderMenu(sf::RenderWindow& window) {
     // Define the menu options
-    std::vector<std::string> options = { "Bubble Sort", "Insertion Sort" };
+    std::vector<std::string> options = { "Bubble Sort", "Insertion Sort", "Selection Sort" };
     int selectedOption = 0;
 
     sf::Font font;
@@ -47,7 +46,8 @@ Algorithm renderMenu(sf::RenderWindow& window) {
                 } else if (event.key.code == sf::Keyboard::Down) {
                     selectedOption = (selectedOption + 1) % options.size();
                 } else if (event.key.code == sf::Keyboard::Enter) {
-                    return static_cast<Algorithm>(selectedOption + 1); // +1 to match Algorithm enum
+                    // +1 to match Algorithm enum
+                    return static_cast<Algorithm>(selectedOption + 1);
                 }
             }
         }
@@ -56,7 +56,8 @@ Algorithm renderMenu(sf::RenderWindow& window) {
         window.clear(sf::Color::Black);
 
         sf::Vector2u windowSize = window.getSize();
-        float yOffset = windowSize.y / (options.size() + 1);  // Vertical spacing between menu items
+        // Vertical spacing between menu items
+        float yOffset = windowSize.y / (options.size() + 1);
 
         for (size_t i = 0; i < options.size(); ++i) {
             sf::Text text;
@@ -84,8 +85,10 @@ void drawArray(sf::RenderWindow& window, const std::vector<int>& arr, int highli
         return;
     }
 
-    float textSize = 30.0f; // Size of each number
-    float xOffset = window.getSize().x / arr.size(); // Horizontal space between numbers
+    // Size of each number
+    float textSize = 30.0f;
+    // Horizontal space between numbers
+    float xOffset = window.getSize().x / arr.size();
 
     for (size_t i = 0; i < arr.size(); ++i) {
         sf::Text numberText;
@@ -95,15 +98,49 @@ void drawArray(sf::RenderWindow& window, const std::vector<int>& arr, int highli
 
         // Highlight the elements being compared or swapped
         if (static_cast<int>(i) == highlightedIndex1 || static_cast<int>(i) == highlightedIndex2) {
-            numberText.setFillColor(sf::Color::Red);  // Highlighted color
+            numberText.setFillColor(sf::Color::Red);
         } else {
-            numberText.setFillColor(sf::Color::White);  // Normal color
+            numberText.setFillColor(sf::Color::White);
         }
 
         // Position each number text horizontally based on its index
         numberText.setPosition(i * xOffset + (xOffset / 2) - numberText.getGlobalBounds().width / 2, window.getSize().y / 2);
 
         window.draw(numberText);
+    }
+}
+
+void drawEndMessage(sf::RenderWindow& window, const std::vector<int>& arr) {
+    // Display message to press Enter
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Error loading font" << std::endl;
+    }
+
+    sf::Text message;
+    message.setFont(font);
+    message.setString("Press Enter to return to the main menu");
+    message.setCharacterSize(24);
+    message.setFillColor(sf::Color::White);
+    message.setPosition(window.getSize().x / 2 - message.getGlobalBounds().width / 2, 50);
+
+    // Wait for the Enter key press
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
+                return;
+            }
+        }
+
+        // Clear window and redraw the sorted array and the message
+        window.clear();
+        drawArray(window, arr);
+        window.draw(message);
+        window.display();
     }
 }
 
@@ -124,44 +161,14 @@ void bubbleSort(std::vector<int>& arr, sf::RenderWindow& window) {
                 drawArray(window, arr, j, j + 1);
                 window.display();
 
-                sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
+                sf::sleep(sf::milliseconds(300));
             }
         }
         if (!swapped)
             break;
     }
 
-    // Display message to press Enter
-    sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        std::cerr << "Error loading font" << std::endl;
-    }
-
-    sf::Text message;
-    message.setFont(font);
-    message.setString("Press Enter to return to the main menu");
-    message.setCharacterSize(24);
-    message.setFillColor(sf::Color::White);
-    message.setPosition(window.getSize().x / 2 - message.getGlobalBounds().width / 2, 50);
-
-    // Wait for the Enter key press
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                return;  // Exit the function and return to the main menu
-            }
-        }
-
-        // Clear window and redraw the sorted array and the message
-        window.clear();
-        drawArray(window, arr);  // Draw the final sorted array as numbers
-        window.draw(message);    // Draw the message
-        window.display();
-    }
+    drawEndMessage(window, arr);
 }
 
 void insertionSort(std::vector<int>& arr, sf::RenderWindow& window) {
@@ -179,7 +186,7 @@ void insertionSort(std::vector<int>& arr, sf::RenderWindow& window) {
             drawArray(window, arr, j + 1, i);
             window.display();
 
-            sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
+            sf::sleep(sf::milliseconds(300));
         }
         arr[j + 1] = val;
 
@@ -188,40 +195,42 @@ void insertionSort(std::vector<int>& arr, sf::RenderWindow& window) {
         drawArray(window, arr, j + 1, i);
         window.display();
 
-        sf::sleep(sf::milliseconds(300));  // Slow down the sorting process for visualization
+        sf::sleep(sf::milliseconds(300));
     }
 
-    // Display message to press Enter
-    sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        std::cerr << "Error loading font" << std::endl;
-    }
+    drawEndMessage(window, arr);
+}
 
-    sf::Text message;
-    message.setFont(font);
-    message.setString("Press Enter to return to the main menu");
-    message.setCharacterSize(24);
-    message.setFillColor(sf::Color::White);
-    message.setPosition(window.getSize().x / 2 - message.getGlobalBounds().width / 2, 50);
+void selectionSort(std::vector<int>& arr, sf::RenderWindow& window) {
+    int n = arr.size();
 
-    // Wait for the Enter key press
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
+    for (int i = 0; i < n - 1; i++) {
+        int index = i;
+        for (int j = i + 1; j < n; j++) {
 
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter) {
-                return;  // Exit the function and return to the main menu
+            window.clear();
+            // Highlight the selected and current element
+            drawArray(window, arr, i, j);
+            window.display();
+
+            if (arr[index] > arr[j]) {
+                index = j;
             }
         }
+        // Swap if a smaller element was found
+        if (index != i) {
+            std::swap(arr[i], arr[index]);
+        }
 
-        // Clear window and redraw the sorted array and the message
         window.clear();
-        drawArray(window, arr);  // Draw the final sorted array as numbers
-        window.draw(message);    // Draw the message
+        // Highlight the swapped elements
+        drawArray(window, arr, i, index);
         window.display();
+
+        sf::sleep(sf::milliseconds(300));
     }
+
+    drawEndMessage(window, arr);
 }
 
 int main() {
@@ -242,7 +251,7 @@ int main() {
 
         case AppState::INPUT:
             // Simulated input data for demonstration
-            inputData = { 10, 50, 30, 20, 60, 40, 25, 10, 55, 65 };  // You can replace this with actual input logic
+            inputData = { 10, 50, 30, 20, 60, 40, 25, 10, 55, 65 };
             if (!inputData.empty()) {
                 appState = AppState::VISUALIZE;
             }
@@ -255,8 +264,12 @@ int main() {
             if (selectedAlgorithm == Algorithm::INSERTION_SORT) {
                 insertionSort(inputData, window);
             }
-            // Add other algorithms here
-            appState = AppState::MENU; // Move back to the main menu after returning from sorting
+            if (selectedAlgorithm == Algorithm::SELECTION_SORT) {
+                selectionSort(inputData, window);
+            }
+
+            // Move back to the main menu after returning from sorting
+            appState = AppState::MENU;
             break;
         }
     }
