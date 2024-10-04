@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting Algorithm Visualization</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Sorting Algorithm Visualization</h1>
+    
+    <!-- Dropdown for selecting sorting algorithm -->
+    <label for="sort-algorithm">Choose a sorting algorithm:</label>
+    <select id="sort-algorithm">
+        <option value="bubble">Bubble Sort</option>
+        <option value="selection">Selection Sort</option>
+        <option value="insertion">Insertion Sort</option>
+        <option value="quick">Quick Sort</option>
+        <option value="merge">Merge Sort</option>
+    </select>
+
+    <div id="array"></div>
+
+    <button id="play-pause-btn" onclick="togglePlayPause()">Play</button>
+    <button onclick="previousStep()">&#8592; Previous</button>
+    <button onclick="nextStep()">Next &#8594;</button>
+    <button onclick="generateArray()">Reset Array</button>
+    
+    <div id="step-counter">Step 0 of 0</div>
+
+    <script src="algorithms.js"></script>
+</body>
+</html>
