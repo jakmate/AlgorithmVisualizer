@@ -1,5 +1,5 @@
 // sortAlgorithms.js
-let sortedIndicesPerStep = []; // Store indices that are sorted
+let sortedIndicesPerStep = [];
 
 function computeBubbleSortSteps(array) {
     let tempArray = [...array];

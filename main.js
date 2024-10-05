@@ -1,16 +1,25 @@
 // main.js
 let array = [];
-let steps = []; // Store each step of the sorting process
+let steps = [];
 let currentStep = 0;
 let interval = null;
 let isPlaying = false;
 const arrayContainer = document.getElementById('array');
-let selectedSortAlgorithm = 'bubble'; // Default sorting algorithm
+// Reference to the current algorithm display
+const currentAlgorithmDisplay = document.getElementById('current-algorithm');
+// Reference to the speed slider
+const speedSlider = document.getElementById('speed-slider');
+// Reference to the speed value display
+const speedValueDisplay = document.getElementById('speed-value');
+// Default sorting algorithm
+let selectedSortAlgorithm = 'bubble';
+// Initial speed
+let speed = parseFloat(speedSlider.value);
 
 function generateArray(size = 5) {
     array = [];
     arrayContainer.innerHTML = '';
-    sortedIndicesPerStep = []; // Clear sorted indices per step when resetting array
+    sortedIndicesPerStep = [];
 
     for (let i = 0; i < size; i++) {
         let value = Math.floor(Math.random() * 100) + 1;
@@ -23,7 +32,7 @@ function generateArray(size = 5) {
     }
 
     // Reset sorting steps and state
-    steps = []; // Clear steps on new array generation
+    steps = [];
     currentStep = 0;
     clearInterval(interval);
     isPlaying = false;
@@ -35,8 +44,11 @@ function generateArray(size = 5) {
 
 // Handle the sorting algorithm selection from the dropdown
 function selectSort(algorithm) {
-    selectedSortAlgorithm = algorithm; // Update the selected algorithm
-    clearInterval(interval); // Stop any ongoing animation
+    selectedSortAlgorithm = algorithm;
+    // Update display
+    currentAlgorithmDisplay.innerText = `Current Algorithm: ${algorithm.charAt(0).toUpperCase() + algorithm.slice(1).replace('-', ' ')}`; // Update display
+    // Stop any ongoing animation
+    clearInterval(interval);
     isPlaying = false;
     document.getElementById('play-pause-btn').innerText = 'Play';
 
@@ -60,12 +72,35 @@ function selectSort(algorithm) {
             console.log('Algorithm not implemented');
     }
 
-    displayStep(0); // Display the first step
+    // Display the first step
+    displayStep(0);
+}
+
+// Update the speed of the animation based on the slider value
+function updateSpeed(value) {
+    speed = parseFloat(value);
+    speedValueDisplay.innerText = `Speed: ${speed}x`;
+    if (speed === 0) {
+        clearInterval(interval);
+        isPlaying = false;
+        document.getElementById('play-pause-btn').innerText = 'Play';
+    } else if (isPlaying) {
+        clearInterval(interval);
+        play();
+    }
 }
 
 // Play the animation automatically
 function play() {
     if (currentStep < steps.length) {
+        // If speed is zero, stop the animation
+        if (speed === 0) {
+            clearInterval(interval);
+            document.getElementById('play-pause-btn').innerText = 'Play';
+            isPlaying = false;
+            return;
+        }
+
         interval = setInterval(() => {
             displayStep(currentStep);
             currentStep++;
@@ -74,7 +109,7 @@ function play() {
                 document.getElementById('play-pause-btn').innerText = 'Play';
                 isPlaying = false;
             }
-        }, 500);
+        }, 500/speed);
     }
 }
 
@@ -85,6 +120,14 @@ function togglePlayPause() {
         document.getElementById('play-pause-btn').innerText = 'Play';
         isPlaying = false;
     } else {
+        if (speed === 0) {
+            speed = 0.5;
+            // Update slider position
+            document.getElementById('speed-slider').value = speed;
+            // Update displayed speed
+            speedValueDisplay.innerText = `Speed: ${speed}x`;
+        }
+
         document.getElementById('play-pause-btn').innerText = 'Pause';
         isPlaying = true;
         play();
@@ -119,6 +162,6 @@ function nextStep() {
 
 // Initialize the array and sorting steps on page load
 window.onload = function () {
-    generateArray(); // Generate a new array
-    selectSort(selectedSortAlgorithm); // Automatically select Bubble Sort
+    generateArray();
+    selectSort(selectedSortAlgorithm);
 };
