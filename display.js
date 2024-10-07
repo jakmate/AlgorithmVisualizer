@@ -2,7 +2,7 @@
 function displayStep(step) {
     let elements = document.getElementsByClassName('num');
     let stepInfo = steps[step];
-    
+
     // Reset all elements' styles
     for (let i = 0; i < elements.length; i++) {
         elements[i].classList.remove('selected', 'swapped', 'sorted');
@@ -37,4 +37,31 @@ function displayStep(step) {
 
     // Update the step counter
     document.getElementById('step-counter').innerText = `Step ${currentStep + 1} of ${steps.length}`;
+}
+
+function displaySearchStep(step) {
+    let elements = document.getElementsByClassName('num');
+    let stepInfo = steps[step];
+
+    for (let i = 0; i < elements.length; i++) {
+        elements[i].classList.remove('selected', 'swapped', 'sorted');
+    }
+
+    if (stepInfo.type === 'compare') {
+        let currentIndex = stepInfo.index;
+
+        elements[currentIndex].classList.add('swapped');
+
+        for (let i = 0; i < step; i++) {
+            if (steps[i].type === 'compare' && steps[i].index !== stepInfo.index) {
+                elements[steps[i].index].classList.add('selected');
+            }
+        }
+    } else if (stepInfo.type === 'found') {
+        let foundIndex = stepInfo.index;
+        elements[foundIndex].classList.add('sorted');
+    }
+
+    document.getElementById('step-counter').innerText = `Step ${currentStep + 1} of ${steps.length}`;
+    document.getElementById('current-algorithm').innerText = `Current Algorithm: Linear Search (Target: ${stepInfo.target})`;
 }

@@ -4,17 +4,14 @@ let steps = [];
 let currentStep = 0;
 let interval = null;
 let isPlaying = false;
+let selectedAlgorithm = 'bubble';
+let speed = 1;
+let isSearchAlgorithm = false;
+
 const arrayContainer = document.getElementById('array');
-// Reference to the current algorithm display
 const currentAlgorithmDisplay = document.getElementById('current-algorithm');
-// Reference to the speed slider
 const speedSlider = document.getElementById('speed-slider');
-// Reference to the speed value display
 const speedValueDisplay = document.getElementById('speed-value');
-// Default sorting algorithm
-let selectedSortAlgorithm = 'bubble';
-// Initial speed
-let speed = parseFloat(speedSlider.value);
 
 function generateArray(size = 5) {
     array = [];
@@ -31,32 +28,37 @@ function generateArray(size = 5) {
         arrayContainer.appendChild(numberElement);
     }
 
-    // Reset sorting steps and state
     steps = [];
     currentStep = 0;
     clearInterval(interval);
     isPlaying = false;
     document.getElementById('play-pause-btn').innerText = 'Play';
 
-    // Call the selected sorting algorithm to compute steps
-    selectSort(selectedSortAlgorithm);
+    // After generating the array, determine if it's a search or sort algorithm to run
+    if (isSearchAlgorithm) {
+        selectSearch(selectedAlgorithm);
+    } else {
+        selectSort(selectedAlgorithm);
+    }
 }
 
-// Handle the sorting algorithm selection from the dropdown
 function selectSort(algorithm) {
-    selectedSortAlgorithm = algorithm;
+    isSearchAlgorithm = false;
+    selectedAlgorithm = algorithm;
+
     // Update display
-    currentAlgorithmDisplay.innerText = `Current Algorithm: ${algorithm.charAt(0).toUpperCase() + algorithm.slice(1).replace('-', ' ')}`; // Update display
+    currentAlgorithmDisplay.innerText = `Current Algorithm: ${algorithm.charAt(0).toUpperCase() + algorithm.slice(1).replace('-', ' ')}`;
+
     // Stop any ongoing animation
     clearInterval(interval);
     isPlaying = false;
     document.getElementById('play-pause-btn').innerText = 'Play';
 
-    // Clear existing steps
+    // Clear existing sorting steps
     steps = [];
     currentStep = 0;
 
-    // Determine the selected sorting algorithm and compute steps accordingly
+    // Compute sorting steps for the selected algorithm
     switch (algorithm) {
         case 'bubble':
             computeBubbleSortSteps(array);
@@ -67,13 +69,44 @@ function selectSort(algorithm) {
         case 'insertion':
             computeInsertionSortSteps(array);
             break;
-        // Add quick sort and merge sort in the future
+        // Add quick sort and merge sort if needed
         default:
             console.log('Algorithm not implemented');
     }
 
-    // Display the first step
-    displayStep(0);
+    // Display the first sorting step
+    if (steps.length > 0) {
+        displayStep(0);
+    }
+}
+
+function selectSearch(algorithm) {
+    isSearchAlgorithm = true;
+    selectedAlgorithm = algorithm;
+
+    // Update display
+    currentAlgorithmDisplay.innerText = `Current Algorithm: ${algorithm.charAt(0).toUpperCase() + algorithm.slice(1).replace('-', ' ')}`;
+
+    // Stop ongoing animation and reset search steps
+    clearInterval(interval);
+    isPlaying = false;
+    document.getElementById('play-pause-btn').innerText = 'Play';
+    steps = [];
+    currentStep = 0;
+
+    // Determine the selected search algorithm and compute steps
+    switch (algorithm) {
+        case 'linear':
+            computeLinearSearchSteps(array);
+            break;
+        default:
+            console.log('Search algorithm not implemented');
+    }
+
+    // Display the first search step (if any)
+    if (steps.length > 0) {
+        displaySearchStep(0);
+    }
 }
 
 // Update the speed of the animation based on the slider value
@@ -92,24 +125,30 @@ function updateSpeed(value) {
 
 // Play the animation automatically
 function play() {
-    if (currentStep < steps.length) {
-        // If speed is zero, stop the animation
-        if (speed === 0) {
-            clearInterval(interval);
-            document.getElementById('play-pause-btn').innerText = 'Play';
-            isPlaying = false;
-            return;
+    if (isSearchAlgorithm && steps.length > 0) {
+        if (currentStep < steps.length) {
+            interval = setInterval(() => {
+                displaySearchStep(currentStep);
+                currentStep++;
+                if (currentStep >= steps.length) {
+                    clearInterval(interval);
+                    document.getElementById('play-pause-btn').innerText = 'Play';
+                    isPlaying = false;
+                }
+            }, 500 / speed);
         }
-
-        interval = setInterval(() => {
-            displayStep(currentStep);
-            currentStep++;
-            if (currentStep >= steps.length) {
-                clearInterval(interval);
-                document.getElementById('play-pause-btn').innerText = 'Play';
-                isPlaying = false;
-            }
-        }, 500/speed);
+    } else if (!isSearchAlgorithm && steps.length > 0) {
+        if (currentStep < steps.length) {
+            interval = setInterval(() => {
+                displayStep(currentStep);
+                currentStep++;
+                if (currentStep >= steps.length) {
+                    clearInterval(interval);
+                    document.getElementById('play-pause-btn').innerText = 'Play';
+                    isPlaying = false;
+                }
+            }, 500 / speed);
+        }
     }
 }
 
@@ -122,9 +161,7 @@ function togglePlayPause() {
     } else {
         if (speed === 0) {
             speed = 0.5;
-            // Update slider position
             document.getElementById('speed-slider').value = speed;
-            // Update displayed speed
             speedValueDisplay.innerText = `Speed: ${speed}x`;
         }
 
@@ -136,7 +173,15 @@ function togglePlayPause() {
 
 // Go to the previous step
 function previousStep() {
-    if (currentStep > 0) {
+    if (isSearchAlgorithm && currentStep > 0) {
+        currentStep--;
+        displaySearchStep(currentStep);
+        if (isPlaying) {
+            clearInterval(interval);
+            document.getElementById('play-pause-btn').innerText = 'Play';
+            isPlaying = false;
+        }
+    } else if (!isSearchAlgorithm && currentStep > 0) {
         currentStep--;
         displayStep(currentStep);
         if (isPlaying) {
@@ -149,7 +194,15 @@ function previousStep() {
 
 // Go to the next step
 function nextStep() {
-    if (currentStep < steps.length - 1) {
+    if (isSearchAlgorithm && currentStep < steps.length - 1) {
+        currentStep++;
+        displaySearchStep(currentStep);
+        if (isPlaying) {
+            clearInterval(interval);
+            document.getElementById('play-pause-btn').innerText = 'Play';
+            isPlaying = false;
+        }
+    } else if (!isSearchAlgorithm && currentStep < steps.length - 1) {
         currentStep++;
         displayStep(currentStep);
         if (isPlaying) {
@@ -163,5 +216,9 @@ function nextStep() {
 // Initialize the array and sorting steps on page load
 window.onload = function () {
     generateArray();
-    selectSort(selectedSortAlgorithm);
+    if (isSearchAlgorithm) {
+        selectSearch(selectedAlgorithm);
+    } else {
+        selectSort(selectedAlgorithm);
+    }
 };

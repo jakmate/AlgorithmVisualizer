@@ -1,6 +1,4 @@
 // sortAlgorithms.js
-let sortedIndicesPerStep = [];
-
 function computeBubbleSortSteps(array) {
     let tempArray = [...array];
     let elements = [];
@@ -75,9 +73,9 @@ function computeInsertionSortSteps(array) {
         }
         tempArray[j + 1] = key;
 
-        sortedAtThisStep.add(i-1);
-        elements.push({ type: 'sorted', index: i-1, array: [...tempArray], sortedIndices: new Set(sortedAtThisStep) });
-        if (i+1 === tempArray.length){
+        sortedAtThisStep.add(i - 1);
+        elements.push({ type: 'sorted', index: i - 1, array: [...tempArray], sortedIndices: new Set(sortedAtThisStep) });
+        if (i + 1 === tempArray.length) {
             sortedAtThisStep.add(i);
             elements.push({ type: 'sorted', index: i, array: [...tempArray], sortedIndices: new Set(sortedAtThisStep) });
         }
