@@ -1,12 +1,16 @@
 // display.js
+// Reset all elements' styles
+function resetElements(elements) {
+    for (let element of elements) {
+        element.classList.remove('selected', 'swapped', 'sorted');
+    }
+}
+
 function displayStep(step) {
     let elements = document.getElementsByClassName('num');
     let stepInfo = steps[step];
 
-    // Reset all elements' styles
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].classList.remove('selected', 'swapped', 'sorted');
-    }
+    resetElements(elements);
 
     // Reapply sorted styling based on the current step
     stepInfo.sortedIndices.forEach(index => {
@@ -43,9 +47,7 @@ function displaySearchStep(step) {
     let elements = document.getElementsByClassName('num');
     let stepInfo = steps[step];
 
-    for (let i = 0; i < elements.length; i++) {
-        elements[i].classList.remove('selected', 'swapped', 'sorted');
-    }
+    resetElements(elements);
 
     if (stepInfo.type === 'compare') {
         let currentIndex = stepInfo.index;
