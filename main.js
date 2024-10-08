@@ -69,13 +69,21 @@ function selectAlgorithm(algorithm, type) {
             case 'insertion':
                 computeInsertionSortSteps(array);
                 break;
+            case 'merge':
+                computeMergeSortSteps(array);
+                break;
             default:
                 console.log('Sorting algorithm not implemented');
         }
 
         // Display the first sorting step (if any)
         if (steps.length > 0) {
-            displayStep(0);
+            if (algorithm != 'merge'){
+                displayStep(0);
+            }
+            else {
+                displayMergeSortStep(0);
+            }
         }
     } else if (type === 'search') {
         switch (algorithm) {
@@ -116,7 +124,15 @@ function updateSpeed(value) {
 // Play the animation automatically
 function play() {
     if (steps.length > 0 && currentStep < steps.length) {
-        const displayFunction = isSearchAlgorithm ? displaySearchStep : displayStep;
+        let displayFunction;
+
+        if (isSearchAlgorithm) {
+            displayFunction = displaySearchStep;
+        } else if (selectedAlgorithm === 'merge') {
+            displayFunction = displayMergeSortStep;
+        } else {
+            displayFunction = displayStep;
+        }
 
         interval = setInterval(() => {
             displayFunction(currentStep);
@@ -149,7 +165,15 @@ function togglePlayPause() {
 function previousStep() {
     if (currentStep > 0) {
         currentStep--;
-        const displayFunction = isSearchAlgorithm ? displaySearchStep : displayStep;
+        let displayFunction;
+        
+        if (isSearchAlgorithm) {
+            displayFunction = displaySearchStep;
+        } else if (selectedAlgorithm === 'merge') {
+            displayFunction = displayMergeSortStep;
+        } else {
+            displayFunction = displayStep;
+        }
         displayFunction(currentStep);
 
         if (isPlaying) {
@@ -162,7 +186,15 @@ function previousStep() {
 function nextStep() {
     if (currentStep < steps.length - 1) {
         currentStep++;
-        const displayFunction = isSearchAlgorithm ? displaySearchStep : displayStep;
+        let displayFunction;
+        
+        if (isSearchAlgorithm) {
+            displayFunction = displaySearchStep;
+        } else if (selectedAlgorithm === 'merge') {
+            displayFunction = displayMergeSortStep;
+        } else {
+            displayFunction = displayStep;
+        }
         displayFunction(currentStep);
 
         if (isPlaying) {
