@@ -14,7 +14,8 @@ const speedSlider = document.getElementById('speed-slider');
 const speedValueDisplay = document.getElementById('speed-value');
 const playPauseButton = document.getElementById('play-pause-btn');
 
-function generateArray(size = 5) {
+function generateArray(size = document.getElementById('size-select').value) {
+    const sizeNumber = parseInt(size);
     array = [];
     arrayContainer.innerHTML = '';
     sortedIndicesPerStep = [];
@@ -208,5 +209,8 @@ function nextStep() {
     }
 }
 
-// Initialize the array and sorting steps on page load
-window.onload = generateArray();
+// Initialize the array on page load
+window.onload = function() {
+    generateArray();
+    document.getElementById('size-select').value = "4";
+}
