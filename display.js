@@ -91,18 +91,15 @@ function displayMergeSortStep(step) {
     let stepInfo = steps[step];
 
     resetElements(elements);
+    updateNumsInDOM(elements, stepInfo);
 
     if (stepInfo.type === 'split') {
-        let [left, mid, right] = stepInfo.indexes;
+        const [left, mid, right] = stepInfo.indexes;
         highlightSubarrays(elements, left, mid, right);
-        displayArrows(stepInfo.depth, 'split');
     } else if (stepInfo.type === 'merge') {
-        let [left, right] = stepInfo.indexes;
-        highlightSubarrays(elements, left, Math.floor((left + right) / 2), right);
-        displayArrows(stepInfo.depth, 'merge');
+        const [start, end] = stepInfo.indexes;
+        highlightSubarrays(elements, start, end, end);
     }
-
-    updateNumsInDOM(elements, stepInfo);
 }
 
 function highlightSubarrays(elements, left, mid, right) {
@@ -112,13 +109,4 @@ function highlightSubarrays(elements, left, mid, right) {
     for (let i = mid + 1; i <= right; i++) {
         elements[i].classList.add('swapped');
     }
-}
-
-function displayArrows(depth, type) {
-    let container = document.getElementById('array-container');
-    let arrow = document.createElement('div');
-    arrow.classList.add('arrow');
-    arrow.innerHTML = type === 'split' ? '↓' : '↑';
-    arrow.style.marginTop = `${depth * 20}px`;
-    container.appendChild(arrow);
 }

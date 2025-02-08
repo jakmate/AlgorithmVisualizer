@@ -13,9 +13,9 @@ const currentAlgorithmDisplay = document.getElementById('current-algorithm');
 const speedSlider = document.getElementById('speed-slider');
 const speedValueDisplay = document.getElementById('speed-value');
 const playPauseButton = document.getElementById('play-pause-btn');
+const sizeSelect = document.getElementById('size-select');
 
-function generateArray(size = document.getElementById('size-select').value) {
-    const sizeNumber = parseInt(size);
+function generateArray(size = parseInt(sizeSelect.value)) {
     array = [];
     arrayContainer.innerHTML = '';
     sortedIndicesPerStep = [];

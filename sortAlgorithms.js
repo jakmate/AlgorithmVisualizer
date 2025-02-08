@@ -85,70 +85,69 @@ function computeInsertionSortSteps(array) {
 
 function computeMergeSortSteps(array) {
     let elements = [];
-    mergeSortHelper(array, 0, array.length - 1, elements);
+    let initialArray = [...array];
+    mergeSortHelper([...array], 0, elements, 0, initialArray);
     steps = elements;
 }
 
-function mergeSortHelper(arr, left, right, elements, depth = 0) {
-    if (left < right) {
-        const mid = Math.floor((left + right) / 2);
-
-        // Record the splitting step
-        elements.push({ 
-            type: 'split', 
-            indexes: [left, mid, right], 
-            array: [...arr], 
-            depth: depth 
-        });
-
-        // Recursively split the array
-        mergeSortHelper(arr, left, mid, elements, depth + 1);
-        mergeSortHelper(arr, mid + 1, right, elements, depth + 1);
-
-        // Record the merging step
-        merge(arr, left, mid, right, elements, depth);
+function mergeSortHelper(currentArray, startIdx, elements, depth, originalArray) {
+    if (currentArray.length <= 1) {
+        return currentArray;
     }
+
+    const mid = Math.floor(currentArray.length / 2);
+    const left = currentArray.slice(0, mid);
+    const right = currentArray.slice(mid);
+
+    // Record split step
+    const splitIndexes = [
+        startIdx,
+        startIdx + mid - 1,
+        startIdx + currentArray.length - 1
+    ];
+    elements.push({
+        type: 'split',
+        indexes: splitIndexes,
+        array: [...originalArray],
+        depth: depth
+    });
+
+    const leftSorted = mergeSortHelper(left, startIdx, elements, depth + 1, originalArray);
+    const rightSorted = mergeSortHelper(right, startIdx + mid, elements, depth + 1, originalArray);
+
+    return merge(leftSorted, rightSorted, startIdx, elements, depth, originalArray);
 }
 
-function merge(arr, left, mid, right, elements, depth) {
-    let n1 = mid - left + 1;
-    let n2 = right - mid;
+function merge(left, right, startIdx, elements, depth, originalArray) {
+    let result = [];
+    let leftIndex = 0;
+    let rightIndex = 0;
+    let mergeSteps = [];
 
-    let leftArr = new Array(n1);
-    let rightArr = new Array(n2);
-
-    for (let i = 0; i < n1; i++) leftArr[i] = arr[left + i];
-    for (let j = 0; j < n2; j++) rightArr[j] = arr[mid + 1 + j];
-
-    let i = 0, j = 0, k = left;
-    while (i < n1 && j < n2) {
-        if (leftArr[i] <= rightArr[j]) {
-            arr[k] = leftArr[i];
-            i++;
+    while (leftIndex < left.length && rightIndex < right.length) {
+        if (left[leftIndex] <= right[rightIndex]) {
+            result.push(left[leftIndex]);
+            leftIndex++;
         } else {
-            arr[k] = rightArr[j];
-            j++;
+            result.push(right[rightIndex]);
+            rightIndex++;
         }
-        k++;
     }
 
-    while (i < n1) {
-        arr[k] = leftArr[i];
-        i++;
-        k++;
+    result = result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
+
+    // Update the original array with merged result
+    for (let i = 0; i < result.length; i++) {
+        originalArray[startIdx + i] = result[i];
     }
 
-    while (j < n2) {
-        arr[k] = rightArr[j];
-        j++;
-        k++;
-    }
-
-    // Record the merge result step
-    elements.push({ 
-        type: 'merge', 
-        indexes: [left, right], 
-        array: [...arr], 
-        depth: depth 
+    // Record merge step
+    elements.push({
+        type: 'merge',
+        indexes: [startIdx, startIdx + result.length - 1],
+        array: [...originalArray],
+        depth: depth
     });
+
+    return result;
 }
