@@ -93,12 +93,17 @@ function displayMergeSortStep(step) {
     resetElements(elements);
     updateNumsInDOM(elements, stepInfo);
 
+    document.getElementById('step-counter').innerText = `Step ${currentStep + 1} of ${steps.length}`;
+
     if (stepInfo.type === 'split') {
         const [left, mid, right] = stepInfo.indexes;
         highlightSubarrays(elements, left, mid, right);
     } else if (stepInfo.type === 'merge') {
         const [start, end] = stepInfo.indexes;
         highlightSubarrays(elements, start, end, end);
+    } else if (stepInfo.type === 'sorted') {
+        // Mark all elements as sorted
+        Array.from(elements).forEach(el => el.classList.add('sorted'));
     }
 }
 

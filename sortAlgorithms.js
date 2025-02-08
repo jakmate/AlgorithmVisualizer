@@ -87,6 +87,11 @@ function computeMergeSortSteps(array) {
     let elements = [];
     let initialArray = [...array];
     mergeSortHelper([...array], 0, elements, 0, initialArray);
+    elements.push({
+        type: 'sorted',
+        array: [...initialArray],
+        sortedIndices: new Set(Array.from({length: initialArray.length}, (_, i) => i))
+    });
     steps = elements;
 }
 
@@ -100,14 +105,9 @@ function mergeSortHelper(currentArray, startIdx, elements, depth, originalArray)
     const right = currentArray.slice(mid);
 
     // Record split step
-    const splitIndexes = [
-        startIdx,
-        startIdx + mid - 1,
-        startIdx + currentArray.length - 1
-    ];
     elements.push({
         type: 'split',
-        indexes: splitIndexes,
+        indexes: [startIdx, startIdx + mid - 1, startIdx + currentArray.length - 1],
         array: [...originalArray],
         depth: depth
     });
@@ -119,35 +119,48 @@ function mergeSortHelper(currentArray, startIdx, elements, depth, originalArray)
 }
 
 function merge(left, right, startIdx, elements, depth, originalArray) {
-    let result = [];
-    let leftIndex = 0;
-    let rightIndex = 0;
-    let mergeSteps = [];
+    let mergedArray = [];
+    let i = 0, j = 0;
+    
+    // Create copy of current original array state
+    const currentState = [...originalArray];
 
-    while (leftIndex < left.length && rightIndex < right.length) {
-        if (left[leftIndex] <= right[rightIndex]) {
-            result.push(left[leftIndex]);
-            leftIndex++;
+    while (i < left.length && j < right.length) {
+        if (left[i] <= right[j]) {
+            mergedArray.push(left[i]);
+            currentState[startIdx + i + j] = left[i];
+            i++;
         } else {
-            result.push(right[rightIndex]);
-            rightIndex++;
+            mergedArray.push(right[j]);
+            currentState[startIdx + i + j] = right[j];
+            j++;
         }
     }
 
-    result = result.concat(left.slice(leftIndex)).concat(right.slice(rightIndex));
-
-    // Update the original array with merged result
-    for (let i = 0; i < result.length; i++) {
-        originalArray[startIdx + i] = result[i];
+    // Add remaining elements
+    while (i < left.length) {
+        mergedArray.push(left[i]);
+        currentState[startIdx + i + j] = left[i];
+        i++;
+    }
+    while (j < right.length) {
+        mergedArray.push(right[j]);
+        currentState[startIdx + i + j] = right[j];
+        j++;
     }
 
-    // Record merge step
+    // Update original array
+    mergedArray.forEach((val, idx) => {
+        originalArray[startIdx + idx] = val;
+    });
+
+    // Record merge step with updated array
     elements.push({
         type: 'merge',
-        indexes: [startIdx, startIdx + result.length - 1],
+        indexes: [startIdx, startIdx + mergedArray.length - 1],
         array: [...originalArray],
         depth: depth
     });
 
-    return result;
+    return mergedArray;
 }
