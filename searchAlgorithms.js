@@ -18,3 +18,43 @@ function computeLinearSearchSteps(array) {
 
     steps = elements;
 }
+
+function computeBinarySearchSteps(array) {
+    let tempArray = [...array].sort((a, b) => a - b); // Ensure the array is sorted
+    let elements = [];
+    let searchTarget = array[Math.floor(Math.random() * array.length)];
+    let left = 0;
+    let right = tempArray.length - 1;
+    let found = false;
+
+    while (left <= right && !found) {
+        const mid = Math.floor((left + right) / 2);
+        elements.push({
+            type: 'binary-compare',
+            left: left,
+            right: right,
+            mid: mid,
+            target: searchTarget,
+            array: [...tempArray],
+            sortedIndices: new Set()
+        });
+
+        if (tempArray[mid] === searchTarget) {
+            elements.push({
+                type: 'found',
+                index: mid,
+                target: searchTarget,
+                array: [...tempArray],
+                sortedIndices: new Set()
+            });
+            found = true;
+        } else if (tempArray[mid] < searchTarget) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+
+    steps = elements;
+    array = [...tempArray]; // Update the global array to sorted version
+}

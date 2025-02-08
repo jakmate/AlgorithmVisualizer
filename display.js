@@ -53,25 +53,37 @@ function displaySearchStep(step) {
 
     resetElements(elements);
 
-    if (stepInfo.type === 'compare') {
-        let currentIndex = stepInfo.index;
+    if (selectedAlgorithm === 'binary') {
+        document.getElementById('current-algorithm').innerText = `Current Algorithm: Binary Search (Target: ${stepInfo.target})`;
 
-        elements[currentIndex].classList.add('swapped');
-
-        for (let i = 0; i < step; i++) {
-            if (steps[i].type === 'compare' && steps[i].index !== stepInfo.index) {
-                elements[steps[i].index].classList.add('selected');
+        if (stepInfo.type === 'binary-compare') {
+            // Highlight the current subarray from left to right
+            for (let i = stepInfo.left; i <= stepInfo.right; i++) {
+                elements[i].classList.add('selected');
             }
+            // Highlight the mid element
+            elements[stepInfo.mid].classList.add('swapped');
+        } else if (stepInfo.type === 'found') {
+            elements[stepInfo.index].classList.add('sorted');
         }
-    } else if (stepInfo.type === 'found') {
-        let foundIndex = stepInfo.index;
-        elements[foundIndex].classList.add('sorted');
+    } else {
+        document.getElementById('current-algorithm').innerText = `Current Algorithm: Linear Search (Target: ${stepInfo.target})`;
+
+        if (stepInfo.type === 'compare') {
+            let currentIndex = stepInfo.index;
+            elements[currentIndex].classList.add('swapped');
+            for (let i = 0; i < step; i++) {
+                if (steps[i].type === 'compare' && steps[i].index !== currentIndex) {
+                    elements[steps[i].index].classList.add('selected');
+                }
+            }
+        } else if (stepInfo.type === 'found') {
+            elements[stepInfo.index].classList.add('sorted');
+        }
     }
 
     updateNumsInDOM(elements, stepInfo);
-
     document.getElementById('step-counter').innerText = `Step ${currentStep + 1} of ${steps.length}`;
-    document.getElementById('current-algorithm').innerText = `Current Algorithm: Linear Search (Target: ${stepInfo.target})`;
 }
 
 function displayMergeSortStep(step) {

@@ -44,8 +44,8 @@ function resetPlayState() {
     playPauseButton.innerText = 'Play';
 }
 
-function selectAlgorithm(algorithm, type) {
-    isSearchAlgorithm = (type === 'search');
+function selectSort(algorithm) {
+    isSearchAlgorithm = false;
     selectedAlgorithm = algorithm;
 
     // Update display
@@ -58,55 +58,60 @@ function selectAlgorithm(algorithm, type) {
     currentStep = 0;
 
     // Compute the steps based on the algorithm type
-    if (type === 'sort') {
-        switch (algorithm) {
-            case 'bubble':
-                computeBubbleSortSteps(array);
-                break;
-            case 'selection':
-                computeSelectionSortSteps(array);
-                break;
-            case 'insertion':
-                computeInsertionSortSteps(array);
-                break;
-            case 'merge':
-                computeMergeSortSteps(array);
-                break;
-            default:
-                console.log('Sorting algorithm not implemented');
-        }
+    switch (algorithm) {
+        case 'bubble':
+            computeBubbleSortSteps(array);
+            break;
+        case 'selection':
+            computeSelectionSortSteps(array);
+            break;
+        case 'insertion':
+            computeInsertionSortSteps(array);
+            break;
+        case 'merge':
+            computeMergeSortSteps(array);
+            break;
+        default:
+            console.log('Sorting algorithm not implemented');
+    }
 
-        // Display the first sorting step (if any)
-        if (steps.length > 0) {
-            if (algorithm != 'merge'){
-                displayStep(0);
-            }
-            else {
-                displayMergeSortStep(0);
-            }
+    // Display the first sorting step
+    if (steps.length > 0) {
+        if (algorithm != 'merge'){
+            displayStep(0);
         }
-    } else if (type === 'search') {
-        switch (algorithm) {
-            case 'linear':
-                computeLinearSearchSteps(array);
-                break;
-            default:
-                console.log('Search algorithm not implemented');
-        }
-
-        // Display the first search step (if any)
-        if (steps.length > 0) {
-            displaySearchStep(0);
+        else {
+            displayMergeSortStep(0);
         }
     }
 }
 
-function selectSort(algorithm) {
-    selectAlgorithm(algorithm, 'sort');
-}
-
 function selectSearch(algorithm) {
-    selectAlgorithm(algorithm, 'search');
+    isSearchAlgorithm = true;
+    selectedAlgorithm = algorithm;
+
+    currentAlgorithmDisplay.innerText = `Current Algorithm: ${algorithm.charAt(0).toUpperCase() + algorithm.slice(1)} Search`;
+    resetPlayState();
+    steps = [];
+    currentStep = 0;
+
+    if (algorithm === 'binary') {
+        computeBinarySearchSteps(array);
+        // Update the displayed array to the sorted version
+        if (steps.length > 0) {
+            array = steps[0].array.slice();
+            const elements = document.getElementsByClassName('num');
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].innerText = array[i];
+            }
+        }
+    } else if (algorithm === 'linear') {
+        computeLinearSearchSteps(array);
+    }
+
+    if (steps.length > 0) {
+        displaySearchStep(0);
+    }
 }
 
 // Update the speed of the animation based on the slider value

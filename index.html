@@ -30,10 +30,8 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="firstDropdown">
                             <li><a class="dropdown-item" href="#" onclick="selectSort('bubble')">Bubble Sort</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="selectSort('selection')">Selection Sort</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#" onclick="selectSort('insertion')">Insertion Sort</a>
-                            </li>
+                            <li><a class="dropdown-item" href="#" onclick="selectSort('selection')">Selection Sort</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectSort('insertion')">Insertion Sort</a></li>
                             <li><a class="dropdown-item" href="#" onclick="selectSort('quick')">Quick Sort</a></li>
                             <li><a class="dropdown-item" href="#" onclick="selectSort('merge')">Merge Sort</a></li>
                         </ul>
@@ -44,9 +42,8 @@
                             Search
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="secondDropdown">
-                            <li><a class="dropdown-item" href="#" onclick="selectSearch('linear')">Linear Search</a>
-                            </li>
-                            <li><a class="dropdown-item" href="#">Binary Search</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectSearch('linear')">Linear Search</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="selectSearch('binary')">Binary Search</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -57,7 +54,9 @@
     <div class="container text-center mt-5">
         <div id="current-algorithm" class="h5 mb-3">Current Algorithm: Bubble Sort</div>
 
-        <div id="array" class="mb-3"></div>
+        <div id="array-container">
+            <div id="array"></div>
+        </div>
 
         <button id="play-pause-btn" onclick="togglePlayPause()" class="btn btn-primary mb-2">Play</button>
         <button onclick="previousStep()" class="btn btn-secondary mb-2">&#8592; Previous</button>
