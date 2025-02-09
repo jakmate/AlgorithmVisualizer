@@ -69,6 +69,9 @@ function selectSort(algorithm) {
         case 'insertion':
             computeInsertionSortSteps(array);
             break;
+        case 'quick':
+            computeQuickSortSteps(array);
+            break;
         case 'merge':
             computeMergeSortSteps(array);
             break;
@@ -78,11 +81,14 @@ function selectSort(algorithm) {
 
     // Display the first sorting step
     if (steps.length > 0) {
-        if (algorithm != 'merge'){
-            displayStep(0);
+        if (algorithm === 'merge'){
+            displayMergeSortStep(0);
+        }
+        else if (algorithm === 'quick'){
+            displayQuickSortStep(0);
         }
         else {
-            displayMergeSortStep(0);
+            displayStep(0);
         }
     }
 }

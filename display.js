@@ -115,3 +115,39 @@ function highlightSubarrays(elements, left, mid, right) {
         elements[i].classList.add('swapped');
     }
 }
+
+function displayQuickSortStep(step) {
+    let elements = document.getElementsByClassName('num');
+    let stepInfo = steps[step];
+
+    resetElements(elements);
+
+    // Reapply sorted styling
+    stepInfo.sortedIndices.forEach(index => {
+        elements[index].classList.add('sorted');
+    });
+
+    // Handle different step types
+    switch(stepInfo.type) {
+        case 'compare':
+            elements[stepInfo.indexes[0]].classList.add('selected');
+            elements[stepInfo.indexes[1]].classList.add('selected');
+            break;
+            
+        case 'swap':
+            elements[stepInfo.indexes[0]].classList.add('swapped');
+            elements[stepInfo.indexes[1]].classList.add('swapped');
+            break;
+            
+        case 'pivot':
+            elements[stepInfo.index].classList.add('swapped');
+            break;
+            
+        case 'sorted':
+            elements[stepInfo.index].classList.add('sorted');
+            break;
+    }
+
+    updateNumsInDOM(elements, stepInfo);
+    document.getElementById('step-counter').innerText = `Step ${currentStep + 1} of ${steps.length}`;
+}

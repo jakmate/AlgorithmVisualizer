@@ -164,3 +164,82 @@ function merge(left, right, startIdx, elements, depth, originalArray) {
 
     return mergedArray;
 }
+
+function computeQuickSortSteps(array) {
+    let tempArray = [...array];
+    let elements = [];
+    let sortedIndices = new Set();
+
+    function quickSortHelper(low, high) {
+        if (low < high) {
+            let pivotIndex = partition(low, high);
+            sortedIndices.add(pivotIndex);
+            elements.push({
+                type: 'sorted',
+                index: pivotIndex,
+                array: [...tempArray],
+                sortedIndices: new Set(sortedIndices)
+            });
+            
+            quickSortHelper(low, pivotIndex - 1);
+            quickSortHelper(pivotIndex + 1, high);
+        } else if (low === high) {
+            sortedIndices.add(low);
+            elements.push({
+                type: 'sorted',
+                index: low,
+                array: [...tempArray],
+                sortedIndices: new Set(sortedIndices)
+            });
+        }
+    }
+
+    function partition(low, high) {
+        const pivot = tempArray[high];
+        let i = low - 1;
+        
+        elements.push({
+            type: 'pivot',
+            index: high,
+            array: [...tempArray],
+            sortedIndices: new Set(sortedIndices)
+        });
+
+        for (let j = low; j < high; j++) {
+            elements.push({
+                type: 'compare',
+                indexes: [j, high],
+                array: [...tempArray],
+                sortedIndices: new Set(sortedIndices)
+            });
+
+            if (tempArray[j] < pivot) {
+                i++;
+                if (i !== j) {
+                    [tempArray[i], tempArray[j]] = [tempArray[j], tempArray[i]];
+                    elements.push({
+                        type: 'swap',
+                        indexes: [i, j],
+                        array: [...tempArray],
+                        sortedIndices: new Set(sortedIndices)
+                    });
+                }
+            }
+        }
+
+        if (i + 1 !== high) {
+            [tempArray[i + 1], tempArray[high]] = [tempArray[high], tempArray[i + 1]];
+            elements.push({
+                type: 'swap',
+                indexes: [i + 1, high],
+                array: [...tempArray],
+                sortedIndices: new Set(sortedIndices)
+            });
+        }
+        
+        return i + 1;
+    }
+
+    quickSortHelper(0, tempArray.length - 1);
+    steps = elements;
+}
