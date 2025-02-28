@@ -42,7 +42,7 @@ function generateArray(size = parseInt(sizeSelect.value)) {
 function resetPlayState() {
     clearInterval(interval);
     isPlaying = false;
-    playPauseButton.innerText = 'Play';
+    playPauseButton.innerText = 'Play ▶️';
 }
 
 function selectSort(algorithm) {
@@ -167,7 +167,7 @@ function togglePlayPause() {
             speedValueDisplay.innerText = `Speed: ${speed}x`;
         }
 
-        playPauseButton.innerText = 'Pause';
+        playPauseButton.innerText = 'Pause ⏸️';
         isPlaying = true;
         play();
     }
