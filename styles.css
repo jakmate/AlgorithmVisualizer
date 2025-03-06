@@ -9,7 +9,7 @@ body {
     padding: 1.5rem;
     background-color: white;
     border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px #0000000d;
 }
 
 .num {
@@ -24,10 +24,10 @@ body {
     background-color: #e9ecef;
     border-radius: 8px;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px #0000000d;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
     .num {
         width: 2.8rem;
         height: 2.8rem;
@@ -65,12 +65,12 @@ body {
 }
 
 .navbar {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px #0000000d;
 }
 
 .dropdown-menu {
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px #0000001a;
 }
 
 #step-counter {

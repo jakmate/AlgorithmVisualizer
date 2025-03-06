@@ -1,0 +1,54 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install linters
+        run: |
+          npm install -g htmlhint stylelint eslint stylelint-config-standard
+      
+      - name: Lint HTML files
+        run: htmlhint ./*.html
+
+      - name: Create inline stylelint configuration
+        run: |
+          echo '{
+            "extends": "stylelint-config-standard"
+          }' > .stylelintrc.json
+      
+      - name: Lint CSS files
+        run: stylelint "./*.css"
+
+      - name: Create inline ESLint configuration (flat config)
+        run: |
+          echo "module.exports = [" > eslint.config.js
+          echo "  {" >> eslint.config.js
+          echo "    languageOptions: {" >> eslint.config.js
+          echo "      ecmaVersion: 'latest'," >> eslint.config.js
+          echo "      sourceType: 'module'," >> eslint.config.js
+          echo "      globals: {" >> eslint.config.js
+          echo "        window: 'readonly'," >> eslint.config.js
+          echo "        document: 'readonly'," >> eslint.config.js
+          echo "        console: 'readonly'" >> eslint.config.js
+          echo "      }" >> eslint.config.js
+          echo "    }," >> eslint.config.js
+          echo "    rules: {}" >> eslint.config.js
+          echo "  }" >> eslint.config.js
+          echo "];" >> eslint.config.js
+      
+      - name: Lint JavaScript files
+        run: eslint "./*.js"
