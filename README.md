@@ -33,7 +33,7 @@ A web-based tool to visualize how sorting and searching algorithms work step-by-
 No installation required! Open `index.html` in a browser. For local development:
 
 ```bash
-git clone https://github.com/your-username/algorithm-visualizer.git
+git clone https://github.com/jakmate/AlgorithmVisualizer.git
 cd algorithm-visualizer
 # Open index.html in your browser
 ```
